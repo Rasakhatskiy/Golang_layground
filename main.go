@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import "github.com/hajimehoshi/ebiten/v2"
+
+var W, H = 512, 512
+var SCALE = 10.0
 
 func main() {
-	fmt.Println("Hello world!")
+	ebiten.SetWindowSize(W, H)
+	ebiten.SetWindowTitle("bruh momento numero cuarenta y siete")
+	game := &Game{}
+	if err := ebiten.RunGame(game); err != nil {
+		panic(err)
+	}
 }
