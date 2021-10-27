@@ -9,6 +9,10 @@ import (
 type Game struct {
 }
 
+type MyColor struct {
+	r, g, b, a uint8
+}
+
 func (g Game) Update() error {
 	return nil
 }
@@ -31,7 +35,7 @@ func f3(x int) int {
 	return int(Y)
 }
 
-func findEdge(image [][]uint8, w, h int)  *ebiten.Image{
+func findEdge(image [][]uint8, w, h int) *ebiten.Image {
 	var maskV = [3][3]int{
 		{-1, 0, 1},
 		{-2, 0, 2},
@@ -78,13 +82,99 @@ func grayscale(image *ebiten.Image, w, h int) [][]uint8 {
 	return newImage
 }
 
+func toMatrix(image *ebiten.Image) ([][]color.Color, int, int) {
+	w, h := image.Size()
+	var matrix = make([][]color.Color, w)
+	for i := 0; i < w; i++ {
+		matrix[i] = make([]color.Color, h)
+		for j := 0; j < h; j++ {
+			matrix[i][j] = image.At(i, j)
+		}
+	}
+	return matrix, w, h
+}
+
+func floyd(matrix [][]color.Color, w, h int) *ebiten.Image {
+	var image = ebiten.NewImage(w, h)
+	for i := 0; i < w; i++ {
+		for j := 0; j < h; j++ {
+			var red, green, blue float64 = 0, 0, 0 // matrix[i][j].RGBA()
+			r0, b0, g0, _ := matrix[i][j].RGBA()
+
+			if i > 0 {
+				//r, g, b, _ := matrix[i-1][j].RGBA()
+				coef := 7.0 / 16.0
+				red += float64(uint8(r0)) / coef
+				green += float64(uint8(g0)) / coef
+				blue += float64(uint8(b0)) / coef
+
+				image.Set(i-1, j, color.RGBA{
+					R: uint8(red),
+					G: uint8(green),
+					B: uint8(blue),
+					A: 255,
+				})
+			}
+			red, green, blue = 0,0,0
+			if i < w-1 {
+				coef := 3.0 / 16.0
+				red += float64(uint8(r0)) / coef
+				green += float64(uint8(g0)) / coef
+				blue += float64(uint8(b0)) / coef
+
+				image.Set(i+1, j, color.RGBA{
+					R: uint8(red),
+					G: uint8(green),
+					B: uint8(blue),
+					A: 255,
+				})
+			}
+			red, green, blue = 0,0,0
+
+
+			if j > 0 {
+				coef := 5.0 / 16.0
+				red += float64(uint8(r0)) / coef
+				green += float64(uint8(g0)) / coef
+				blue += float64(uint8(b0)) / coef
+
+				image.Set(i, j-1, color.RGBA{
+					R: uint8(red),
+					G: uint8(green),
+					B: uint8(blue),
+					A: 255,
+				})
+			}
+			red, green, blue = 0,0,0
+			if j < h-1 {
+				coef := 1.0 / 16.0
+				red += float64(uint8(r0)) / coef
+				green += float64(uint8(g0)) / coef
+				blue += float64(uint8(b0)) / coef
+
+				image.Set(i, j+1, color.RGBA{
+					R: uint8(red),
+					G: uint8(green),
+					B: uint8(blue),
+					A: 255,
+				})
+			}
+
+			image.Set(i, j, color.RGBA{
+				R: uint8(red),
+				G: uint8(green),
+				B: uint8(blue),
+				A: 255,
+			})
+		}
+	}
+	return image
+}
+
 func (g Game) Draw(screen *ebiten.Image) {
-
-	//var prevr, prevg, prevb uint32 = 0, 0, 0
-
 	if max > 0 {
-		var gray = grayscale(img, W, H)
-		img = findEdge(gray, W, H)
+		//var gray = grayscale(img, W, H)
+		img = floyd(toMatrix(img))
 		max--
 	}
 	screen.DrawImage(img, nil)

@@ -16,7 +16,8 @@ var max = 1
 
 func main() {
 	var err error
-	img, _, err = ebitenutil.NewImageFromFile("F:\\Desktop\\photo_2021-10-27_11-44-39.jpg")
+	img, _, err = ebitenutil.NewImageFromFile(`F:\Desktop\1.png`)
+	W, H = img.Size()
 	if err != nil {
 		log.Fatal(err)
 	}
