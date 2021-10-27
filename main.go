@@ -9,14 +9,14 @@ import (
 	"log"
 )
 
-var W, H = 720, 694
+var W, H = 980, 1200
 var SCALE = 10.0
 var img *ebiten.Image
-var max = 3
+var max = 1
 
 func main() {
 	var err error
-	img, _, err = ebitenutil.NewImageFromFile("F:\\Desktop\\1.png")
+	img, _, err = ebitenutil.NewImageFromFile("F:\\Desktop\\photo_2021-10-27_11-44-39.jpg")
 	if err != nil {
 		log.Fatal(err)
 	}
