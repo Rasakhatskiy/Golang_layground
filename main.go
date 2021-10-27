@@ -10,13 +10,13 @@ import (
 )
 
 var W, H = 980, 1200
-var SCALE = 10.0
-var img *ebiten.Image
-var max = 1
+
 
 func main() {
+
+
 	var err error
-	img, _, err = ebitenutil.NewImageFromFile(`F:\Desktop\1.png`)
+	img, _, err = ebitenutil.NewImageFromFile(`C:\2.jpg`)
 	W, H = img.Size()
 	if err != nil {
 		log.Fatal(err)
